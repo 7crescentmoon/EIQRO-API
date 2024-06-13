@@ -20,7 +20,7 @@ def firebase_authentication_middleware(f):
             decoded_token = auth.verify_id_token(id_token)
             user_id = decoded_token['uid']
             user_record = auth.get_user(user_id)
-            g.user_email = user_record.email
+            g.uid = user_record.uid
 
         except Exception as e:
             return {'error': f'Authentication failed: {str(e)}'}, 401
