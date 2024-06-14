@@ -15,11 +15,11 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 app = Flask(__name__)
 CORS(app)
 
-prod = os.environ.get('ENVIRONMENT', "DEVELOPMENT")
+prod = os.environ.get('PRODUCTION', "False").lower() == "true"
 
 cred = None
 
-if(prod == 'PRODUCTION'):
+if prod:
     cred = firebase_admin.credentials.ApplicationDefault()
 else:
     cred = firebase_admin.credentials.Certificate('venv/serviceAccount.json')
@@ -28,7 +28,7 @@ else:
 firebase_admin.initialize_app(cred)
 
 def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
-    if(prod == 'PRODUCTION'):
+    if prod:
         storage_client = storage.Client()
     else:
         storage_client = storage.Client.from_service_account_json('venv/serviceAccount.json')
@@ -43,7 +43,7 @@ def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
     return url
 
 def save_prediction_to_firestore(predicted_class, confidence, image_url, user_id):
-    if(prod == "PRODUCTION"):
+    if prod:
         db = firestore.Client()
     else:
         db = firestore.Client.from_service_account_json('venv/serviceAccount.json')
