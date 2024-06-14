@@ -28,7 +28,10 @@ else:
 firebase_admin.initialize_app(cred)
 
 def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
-    storage_client = storage.Client.from_service_account_json('venv/serviceAccount.json')
+    if(prod == 'PRODUCTION'):
+        storage_client = storage.Client()
+    else:
+        storage_client = storage.Client.from_service_account_json('venv/serviceAccount.json')
     bucket = storage_client.bucket(bucket_name)
     blob = bucket.blob(destination_blob_name)
     
@@ -40,7 +43,10 @@ def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
     return url
 
 def save_prediction_to_firestore(predicted_class, confidence, image_url, user_id):
-    db = firestore.Client.from_service_account_json('venv/serviceAccount.json')
+    if(prod == "PRODUCTION"):
+        db = firestore.Client()
+    else:
+        db = firestore.Client.from_service_account_json('venv/serviceAccount.json')
     
     # Buat dokumen baru di koleksi 'history'
     new_prediction_ref = db.collection('history').document()
