@@ -4,12 +4,10 @@ from flask_cors import CORS
 import io
 from PIL import Image
 import numpy as np
-from firebase_admin import credentials
 import firebase_admin 
 import datetime
 from model_load import model, class_names
 from google.cloud import storage, firestore
-from firebase_admin import firestore, auth
 from auth_middleware import firebase_authentication_middleware
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
@@ -17,7 +15,15 @@ os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 app = Flask(__name__)
 CORS(app)
 
-cred = credentials.Certificate('venv/serviceAccount.json')
+prod = os.environ.get('ENVIRONMENT', "DEVELOPMENT")
+
+cred = None
+
+if(prod):
+    cred = firebase_admin.credentials.ApplicationDefault()
+else:
+    cred = firebase_admin.credentials.Certificate('venv/serviceAccount.json')
+
 
 firebase_admin.initialize_app(cred)
 
