@@ -19,7 +19,7 @@ prod = os.environ.get('ENVIRONMENT', "DEVELOPMENT")
 
 cred = None
 
-if(prod):
+if(prod == 'PRODUCTION'):
     cred = firebase_admin.credentials.ApplicationDefault()
 else:
     cred = firebase_admin.credentials.Certificate('venv/serviceAccount.json')
