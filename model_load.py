@@ -9,13 +9,18 @@ model_filename = "model.h5"
 
 model_path = os.path.join(model_dir, model_filename)
 
+prod = os.environ.get('PRODUCTION', "False").lower() == "true"
+
 if not os.path.exists(model_path):
     # Pastikan direktori model ada
     os.makedirs(model_dir, exist_ok=True)
 
     cloud_storage_url = "https://storage.cloud.google.com/hijaiyah_model/model.h5"
 
-    client = storage.Client.from_service_account_json(Path('venv/serviceAccount.json').resolve())
+    if prod:
+        client = storage.Client()
+    else:
+        client = storage.Client.from_service_account_json(Path('venv/serviceAccount.json').resolve())
     bucket = client.bucket("hijaiyah_model")
     blob = bucket.blob(model_filename)
     blob.download_to_filename(model_path)
