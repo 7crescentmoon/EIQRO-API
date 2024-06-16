@@ -5,7 +5,7 @@ from google.cloud import storage
 
 model_dir = "model"
 
-model_filename = "model.h5"
+model_filename = "model_mm9_v2.h5"
 
 model_path = os.path.join(model_dir, model_filename)
 
@@ -15,7 +15,7 @@ if not os.path.exists(model_path):
     # Pastikan direktori model ada
     os.makedirs(model_dir, exist_ok=True)
 
-    cloud_storage_url = "https://storage.cloud.google.com/hijaiyah_model/model.h5"
+    cloud_storage_url = "https://storage.cloud.google.com/hijaiyah_model/model_mm9_v2.h5"
 
     if prod:
         client = storage.Client()

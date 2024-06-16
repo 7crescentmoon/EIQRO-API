@@ -94,7 +94,6 @@ def predict_image_class(model, img_array, class_names):
     else:
         return None
 
-
 @app.route('/v1/predict', methods=['POST'])
 @firebase_authentication_middleware
 def predict():
