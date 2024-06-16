@@ -9,6 +9,7 @@ import datetime
 from model_load import model, class_names
 from google.cloud import storage, firestore
 from auth_middleware import firebase_authentication_middleware
+from flask_swagger_ui import get_swaggerui_blueprint
 
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
@@ -26,6 +27,20 @@ else:
 
 
 firebase_admin.initialize_app(cred)
+
+SWAGGER_URL = '/api-docs'  # URL for exposing Swagger UI (without trailing '/')
+API_URL = '/static/openapi.json'  # Our API url (can of course be a local resource)
+
+# Call factory function to create our blueprint
+swaggerui_blueprint = get_swaggerui_blueprint(
+    SWAGGER_URL,  # Swagger UI static files will be mapped to '{SWAGGER_URL}/dist/'
+    API_URL,
+    config={  # Swagger UI config overrides
+        'E-iqro': "API Docs"
+    }
+)
+
+app.register_blueprint(swaggerui_blueprint)
 
 def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
     if prod:
@@ -112,6 +127,29 @@ def predict():
             return jsonify({'result': predicted_class, 'confidence': confidence, 'uid' : user_id, 'image_url' : image_url})
         else:
             return jsonify({'error': 'Prediction error'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
+
+@app.route('/v1/history', methods=['GET'])
+@firebase_authentication_middleware
+def get_history():
+    user_id = request.args.get('id')
+    if not user_id:
+        return jsonify({'error': 'No user ID provided'}), 400
+    try:
+        if prod:
+            db = firestore.Client()
+        else:
+            db = firestore.Client.from_service_account_json('venv/serviceAccount.json')
+        
+        history_ref = db.collection('history').where('uid', '==', user_id)
+        history_docs = history_ref.stream()
+
+        history_list = []
+        for doc in history_docs:
+            history_list.append(doc.to_dict())
+        
+        return jsonify({'history': history_list})
     except Exception as e:
         return jsonify({'error': str(e)})
     
