@@ -28,14 +28,12 @@ else:
 
 firebase_admin.initialize_app(cred)
 
-SWAGGER_URL = '/api-docs'  # URL for exposing Swagger UI (without trailing '/')
-API_URL = '/static/openapi.json'  # Our API url (can of course be a local resource)
-
-# Call factory function to create our blueprint
+SWAGGER_URL = '/api-docs'  
+API_URL = '/static/openapi.json' 
 swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,  # Swagger UI static files will be mapped to '{SWAGGER_URL}/dist/'
+    SWAGGER_URL,
     API_URL,
-    config={  # Swagger UI config overrides
+    config={
         'E-iqro': "API Docs"
     }
 )
