@@ -27,3 +27,5 @@ local_settings.py
 index.html
 
 model
+
+static

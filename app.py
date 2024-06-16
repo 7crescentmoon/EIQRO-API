@@ -28,17 +28,17 @@ else:
 
 firebase_admin.initialize_app(cred)
 
-SWAGGER_URL = '/api-docs'  
-API_URL = '/static/openapi.json' 
-swaggerui_blueprint = get_swaggerui_blueprint(
-    SWAGGER_URL,
-    API_URL,
-    config={
-        'E-iqro': "API Docs"
-    }
-)
+# SWAGGER_URL = '/api-docs'  
+# API_URL = '/static/openapi.json' 
+# swaggerui_blueprint = get_swaggerui_blueprint(
+#     SWAGGER_URL,
+#     API_URL,
+#     config={
+#         'E-iqro': "API Docs"
+#     }
+# )
 
-app.register_blueprint(swaggerui_blueprint)
+# app.register_blueprint(swaggerui_blueprint)
 
 def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
     if prod:
