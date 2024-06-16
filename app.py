@@ -131,10 +131,10 @@ def predict():
 @app.route('/v1/history', methods=['GET'])
 @firebase_authentication_middleware
 def get_history():
-    user_id = request.args.get('id')
-    if not user_id:
-        return jsonify({'error': 'No user ID provided'}), 400
     try:
+        user_id = g.uid
+        if not user_id:
+            return jsonify({'error': 'No user ID provided'}), 400 
         if prod:
             db = firestore.Client()
         else:
@@ -147,9 +147,9 @@ def get_history():
         for doc in history_docs:
             history_list.append(doc.to_dict())
         
-        return jsonify({'history': history_list})
+        return jsonify({'history': history_list}), 200
     except Exception as e:
-        return jsonify({'error': str(e)})
+        return jsonify({'error': str(e)}), 500
     
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=8080, debug=True)
