@@ -65,16 +65,6 @@
             "bearerAuth": []
           }
         ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "string"
-            },
-            "example": "c0t0mgqvkOcIq01rU0xDlWBGO693"
-          }
-        ],
         "responses": {
           "200": {
             "description": "Successful response",

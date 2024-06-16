@@ -14,7 +14,7 @@ from flask_swagger_ui import get_swaggerui_blueprint
 os.environ['TF_ENABLE_ONEDNN_OPTS'] = '0'
 
 app = Flask(__name__)
-CORS(app)
+CORS(app, resources={r"/*": {"origins": "*"}})
 
 prod = os.environ.get('PRODUCTION', "False").lower() == "true"
 
