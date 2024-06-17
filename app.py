@@ -50,7 +50,6 @@ def upload_image_to_gcs(bucket_name, file_stream, destination_blob_name):
     
     blob.upload_from_file(file_stream, content_type='image/jpeg')
     
-    # Mendapatkan URL file
     url = blob.public_url
     print(f"File uploaded to {url}.")
     return url
@@ -61,10 +60,8 @@ def save_prediction_to_firestore(predicted_class, confidence, image_url, user_id
     else:
         db = firestore.Client.from_service_account_json('venv/serviceAccount.json')
     
-    # Buat dokumen baru di koleksi 'history'
     new_prediction_ref = db.collection('history').document()
     
-    # Data untuk disimpan
     data = {
         'uid': user_id,
         'predicted_class': predicted_class,
@@ -73,7 +70,6 @@ def save_prediction_to_firestore(predicted_class, confidence, image_url, user_id
         'timestamp': datetime.datetime.now()
     }
     
-    # Simpan data ke dalam Firestore
     new_prediction_ref.set(data)
 
     print(f"Prediction saved to Firestore with image URL: {image_url}")
@@ -113,10 +109,9 @@ def predict():
             bucket_name = 'images_from_predict'
             destination_blob_name = "image_predict_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_" + file.filename
             
-            # Membaca file langsung ke dalam memori
             file.seek(0)
             file_stream = io.BytesIO(file.read())
-            file_stream.seek(0)  # Pastikan file stream berada di posisi awal sebelum mengunggah
+            file_stream.seek(0)
             image_url = upload_image_to_gcs(bucket_name, file_stream, destination_blob_name)
             
             user_id = g.uid

@@ -1,7 +1,7 @@
 {
   "openapi": "3.0.0",
   "info": {
-    "title": "iqro-api-test",
+    "title": "api-docs",
     "version": "1.0.0"
   },
   "servers": [
