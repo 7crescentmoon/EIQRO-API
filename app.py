@@ -79,14 +79,20 @@ def preprocess_image_as_array(image):
     im = im.resize((224, 224))
     return np.asarray(im)
 
-def predict_image_class(model, img_array, class_names):
+def predict_image_class(model, img_array, class_names, threshold=0.5):
     img_batch = np.expand_dims(img_array, axis=0)
-    predictions = model.predict(img_batch)
-    predicted_class_index = np.argmax(predictions, axis=1)[0]
+    predictions = model.predict(img_batch)[0]
 
-    if predicted_class_index < len(class_names):
-        predicted_class = class_names[predicted_class_index]
-        return predicted_class
+    predicted_class_index = np.argmax(predictions)
+    predicted_class_score = predictions[predicted_class_index]
+    predicted_class = class_names[predicted_class_index]
+
+    if predicted_class_score >= threshold:
+        result = {
+            "predicted_class": predicted_class,
+            "confidence": float(predicted_class_score),
+        }
+        return result
     else:
         return None
 
@@ -102,10 +108,11 @@ def predict():
     
     try:
         img_array = preprocess_image_as_array(file)
-        predicted_class = predict_image_class(model, img_array, class_names)
+        predicted_class = predict_image_class(model, img_array, class_names, threshold=0.5)
 
         if predicted_class:
-            confidence = np.max(model.predict(np.expand_dims(img_array, axis=0))) * 100
+            confidence = predicted_class['confidence'] * 100
+            predict_model = predicted_class['predicted_class']
             bucket_name = 'images_from_predict'
             destination_blob_name = "image_predict_" + datetime.datetime.now().strftime("%Y%m%d%H%M%S") + "_" + file.filename
             
@@ -116,9 +123,9 @@ def predict():
             
             user_id = g.uid
             save_prediction_to_firestore(predicted_class, confidence, image_url, user_id)
-            return jsonify({'result': predicted_class, 'confidence': confidence, 'uid' : user_id, 'image_url' : image_url})
+            return jsonify({'result': predict_model, 'confidence': confidence,'uid' : user_id, 'image_url' : image_url})
         else:
-            return jsonify({'error': 'Prediction error'})
+            return jsonify({'error': 'prediction invalid'})
     except Exception as e:
         return jsonify({'error': str(e)})
 
