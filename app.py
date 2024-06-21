@@ -79,7 +79,7 @@ def preprocess_image_as_array(image):
     im = im.resize((224, 224))
     return np.asarray(im)
 
-def predict_image_class(model, img_array, class_names, threshold=0.5):
+def predict_image_class(model, img_array, class_names, threshold=0.7):
     img_batch = np.expand_dims(img_array, axis=0)
 
     predictions = model.predict(img_batch)[0]
@@ -109,7 +109,7 @@ def predict():
     
     try:
         img_array = preprocess_image_as_array(file)
-        predicted_class = predict_image_class(model, img_array, class_names, threshold=0.5)
+        predicted_class = predict_image_class(model, img_array, class_names, threshold=0.7)
 
         if predicted_class:
             bucket_name = 'images_from_predict'
